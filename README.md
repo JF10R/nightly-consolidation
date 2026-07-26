@@ -118,12 +118,15 @@ the steps above for you:
 > install the Python dependencies from requirements.txt, link its `skill/`
 > directory into `~/.claude/skills/nightly-consolidation` (directory
 > junction on Windows, symlink on macOS/Linux), then verify the install by
-> running a dry-run consolidation of my last 24h of sessions. Don't
+> running a dry-run consolidation over all of my existing sessions. Don't
 > schedule anything yet.
 
 Dry-run means the agent produces the report and journal but touches no
-promotion target — a safe first look at what the pipeline finds. To then
-put it on a schedule:
+promotion target — a safe first look at what the pipeline finds. This
+first sweep is the biggest run you'll ever do: it covers every session
+still on disk (Claude Code purges transcripts after ~30 days), and it
+primes the ledger so every later run is incremental. To then put it on a
+schedule:
 
 > Read ops/SCHEDULING.md in my nightly-consolidation clone and schedule the
 > nightly run daily at 03:00 with my platform's scheduler (Task Scheduler on
@@ -160,10 +163,16 @@ back to plain `python`/`claude` on PATH otherwise):
 | `PYTHON_EXE` | no | Absolute path to a specific Python interpreter, if `python` isn't reliably on PATH under your scheduler. |
 | `CLAUDE_EXE` | no | Same idea, for the `claude` CLI. |
 
-Every promoted lesson records the model that produced it (`modelUsage` in
-the run's JSON output) rather than pinning a specific model by default —
-calibration/promotion quality should be attributed to whatever model
-actually ran, not assumed constant across model upgrades.
+**Which model runs it:** the bare `claude -p` command under "Running it"
+uses whatever default model your Claude Code is configured with. The
+shipped scheduler wrapper (`ops/run-nightly.ps1`) instead pins an explicit
+model and effort — `--model "claude-opus-5[1m]" --effort xhigh` as shipped;
+edit to taste — because a scheduled run that writes lessons into every
+future session deserves a deterministic model choice, not whatever the
+interactive default happens to be that day. Either way, the run's JSON
+output records the model that actually ran (`modelUsage`), so promotion
+quality stays attributable to a specific model rather than assumed
+constant across upgrades.
 
 ## Kill-test
 
