@@ -47,7 +47,7 @@ $prevEAP = $ErrorActionPreference; $ErrorActionPreference = "Continue"
 $claudeExe = if ($env:CLAUDE_EXE) { $env:CLAUDE_EXE } else { "claude" }
 & $claudeExe -p "Use the nightly-consolidation skill: consolidate the last 72h (the state ledger skips already-processed sessions), apply mode. Machine-wide promotions: ~/.claude is a protected path (any Edit there will be denied) - instead write the COMPLETE updated fence body (every line that belongs between the learned:start/end markers, including your additions and any LRU evictions) to learned/pending/learned-fence.md; the scheduler applies it after the run." `
   --allowedTools "Read Glob Grep Bash(python *) Bash(grep *) Write(learned/**) Edit(learned/**) Edit($root/**/CLAUDE.md)" `
-  --model "claude-fable-5[1m]" --permission-mode dontAsk --effort max --output-format json 2>&1 |
+  --model "claude-opus-5[1m]" --permission-mode dontAsk --effort xhigh --output-format json 2>&1 |
   ForEach-Object { "$_" } | Out-File -FilePath $logFile -Encoding utf8
 $ErrorActionPreference = $prevEAP
 
