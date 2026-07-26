@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+learned/.digests/
+
+# session journals — contain real session excerpts, stay local-only.
+learned/*.md
+learned/.state.json
+learned/pending/
+
+# headless run output — contains transcript-derived information, stays local-only.
+ops/logs/
+*.log
