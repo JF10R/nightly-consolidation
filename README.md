@@ -21,7 +21,12 @@ sessions (or you confirm it yourself), writes it into one of two places:
   there.
 
 Both targets are capped at 30 lines with oldest-first eviction, and every
-line records which session it came from.
+line records which session it came from. A promoted lesson looks like:
+
+```
+- Never poll with `sleep N && tail` in Bash — the harness blocks it; use
+  run_in_background and wait for the notification — src:1964320c,35814b78 last-seen:2026-07-18
+```
 
 ## Why
 
@@ -104,10 +109,32 @@ New-Item -ItemType Junction -Path "$env:USERPROFILE\.claude\skills\nightly-conso
 ln -s "$PWD/skill" ~/.claude/skills/nightly-consolidation
 ```
 
+### Or ask Claude to set it up
+
+If you already use Claude Code, paste this into a session and the agent does
+the steps above for you:
+
+> Clone https://github.com/JF10R/nightly-consolidation and set it up:
+> install the Python dependencies from requirements.txt, link its `skill/`
+> directory into `~/.claude/skills/nightly-consolidation` (directory
+> junction on Windows, symlink on macOS/Linux), then verify the install by
+> running a dry-run consolidation of my last 24h of sessions. Don't
+> schedule anything yet.
+
+Dry-run means the agent produces the report and journal but touches no
+promotion target — a safe first look at what the pipeline finds. To then
+put it on a schedule:
+
+> Read ops/SCHEDULING.md in my nightly-consolidation clone and schedule the
+> nightly run daily at 03:00 with my platform's scheduler (Task Scheduler on
+> Windows, cron elsewhere). Trigger it once manually and show me the log.
+
 ## Running it
 
-Dry-run by default. To actually consolidate the last 24h and apply
-promotions (run from inside your clone):
+Invoked from a normal Claude Code session ("run nightly consolidation"),
+the skill defaults to a dry-run report. The headless command below runs
+apply mode — it consolidates the last 24h and writes qualifying promotions
+(run it from inside your clone):
 
 ```bash
 python skill/scripts/archive.py && \
